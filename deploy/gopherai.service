@@ -1,0 +1,34 @@
+# GopherAI Systemd 服务
+# 将此文件放到服务器的 /etc/systemd/system/gopherai.service
+# 然后执行: sudo systemctl daemon-reload
+# 启动: sudo systemctl start gopherai
+# 开机自启: sudo systemctl enable gopherai
+# 查看状态: sudo systemctl status gopherai
+# 查看日志: sudo journalctl -u gopherai -f
+
+[Unit]
+Description=GopherAI Backend Service
+After=network.target mysql.service redis.service rabbitmq.service
+Wants=mysql.service redis.service rabbitmq.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/gopherai
+ExecStart=/opt/gopherai/gopherai
+Restart=always           # 崩溃后自动重启
+RestartSec=5             # 重启等待 5 秒
+StartLimitInterval=0     # 无限制重试
+
+# 日志配置
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gopherai
+
+# 安全配置
+NoNewPrivileges=true
+ProtectHome=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
