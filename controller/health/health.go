@@ -38,7 +38,9 @@ func Check(c *gin.Context) {
 
 	// 检查 Redis 连接
 	redisOK := true
-	if redis.Rdb != nil {
+	if redis.Rdb == nil {
+		redisOK = false
+	} else {
 		if _, err := redis.Rdb.Ping(redis.Ctx).Result(); err != nil {
 			redisOK = false
 		}
