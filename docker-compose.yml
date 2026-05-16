@@ -1,0 +1,43 @@
+services:
+  # 1.MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: GopherAI
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+
+  #2. Redis 缓存
+  redis: 
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+
+  #3. RabbitMQ 消息队列
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: "123456"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  #4. 你的Go后端
+  app:
+    build: .
+    ports:
+      - "9090:9090"
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+
+volumes:
+  mysql_data:
+
+
